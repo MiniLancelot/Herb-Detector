@@ -105,7 +105,7 @@ function App() {
         setIsOverlayOpen(false);
         setIsShowModal(false);
         setUploadedImage(null);
-        setIsCameraOn(true);
+        // setIsCameraOn(true);
 
         setIsOverlayClosing(false);
       }, 300);
