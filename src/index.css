@@ -59,6 +59,7 @@ body {
 
 
 .webcam-container {
+  display: flex;
   align-items: center;
   justify-content: center;
 }
@@ -71,7 +72,7 @@ body {
 }
 
 .error-holder {
-  margin-left: 56px;
+  /* margin-left: 56px; */
   border-radius: 20px;
   width: auto;
   height: 180px;
