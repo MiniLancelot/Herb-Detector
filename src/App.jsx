@@ -1,5 +1,6 @@
 import Webcam from "react-webcam";
 import { useState, useEffect, useRef, } from "react";
+import { dataRef } from "./Firebase";
 
 async function postData(url = "", data = {}) {
   const response = await fetch(url, {
@@ -21,6 +22,11 @@ function App() {
   const modalRef = useRef(null);
   const [isShowModal, setIsShowModal] = useState(false);
   const [isOverlayClosing, setIsOverlayClosing] = useState(false);
+
+  const [name, setName] = useState('');
+  const [searchedAltName, setSearchedAltName] = useState("");
+  const [searchedSciName, setSearchedSciName] = useState("");
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -49,6 +55,37 @@ function App() {
         });
     }
   }
+
+
+  const TestFirebase = () => {
+    const plantsRef = dataRef.ref('dataset');
+    plantsRef.orderByChild('testname').equalTo(name).once('value', snapshot => {
+      const data = snapshot.val();
+      if (data) {
+        const key = Object.keys(data)[0];
+        setSearchedAltName(data[key].alternativename);
+        setSearchedSciName(data[key].sciencename);
+      } else {
+        setSearchedAltName("No plant found with this name");
+        setSearchedSciName("");
+      }
+
+      console.log(searchedAltName, searchedSciName);
+      return (
+        <div>
+          <div>
+            <h6>Alternative Name: {searchedAltName}</h6>
+            <h6>Scientific Name: {searchedSciName}</h6>
+          </div>
+        </div>
+      );
+    });
+
+
+
+  }
+
+
 
   const handleFileButtonClick = () => {
     fileInputRef.current.click();
@@ -99,6 +136,8 @@ function App() {
 
   const closeOverlay = (e) => {
     if (e.target === overlayRef.current) {
+      setSearchedAltName("");
+      setSearchedSciName("");
       setIsOverlayClosing(true);
       setTimeout(() => {
         setIsOverlayOpen(false);
@@ -108,6 +147,7 @@ function App() {
         // setIsCameraOn(true);
 
         setIsOverlayClosing(false);
+
       }, 300);
 
     }
@@ -135,7 +175,34 @@ function App() {
 
                           <div className="right-content">
                             <ul className="plant-list">
-                              {plantList.map((plant, index) => <li key={index}>{plant}</li>)}
+                              {plantList.map((plant, index) =>
+                              // <li key={index}>{plant}</li>
+                              (
+                                <div className="hover-area"
+                                  key={index}
+                                  onMouseOver={() => {
+                                    setName(plant);
+                                    TestFirebase();
+                                    setIsHovered(true);
+                                  }}
+
+                                  onMouseOut={() => {
+                                    setSearchedAltName("");
+                                    setSearchedSciName("");
+                                    setIsHovered(false);
+
+                                  }}
+                                >
+                                  {!isHovered && <span className="plant-name">{plant}</span>}
+                                  {isHovered && (
+                                    <div className="hover-test">
+                                      <h6>Alternative Name: {searchedAltName}</h6>
+                                      <h6>Scientific Name: {searchedSciName}</h6>
+                                    </div>
+                                  )}
+                                </div>
+                              )
+                              )}
                             </ul>
                           </div>
 

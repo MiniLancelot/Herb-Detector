@@ -214,3 +214,9 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+
+.hover-test h6{
+  font-size: 10px;
+  font-weight: var(--regular-font);
+}
