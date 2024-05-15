@@ -1,5 +1,5 @@
 import Webcam from "react-webcam";
-import { useState, useEffect, useRef, } from "react";
+import { useState, useEffect, useRef } from "react";
 import { dataRef } from "./Firebase";
 
 async function postData(url = "", data = {}) {
@@ -22,11 +22,11 @@ function App() {
   const modalRef = useRef(null);
   const [isShowModal, setIsShowModal] = useState(false);
   const [isOverlayClosing, setIsOverlayClosing] = useState(false);
-
-  const [name, setName] = useState('');
+  // const [name, setName] = useState('');
+  const [searchedName, setSearchedName] = useState("");
   const [searchedAltName, setSearchedAltName] = useState("");
   const [searchedSciName, setSearchedSciName] = useState("");
-  const [isHovered, setIsHovered] = useState(false);
+  const [hoveredPlant, setHoveredPlant] = useState(null);
 
   useEffect(() => {
     navigator.mediaDevices.getUserMedia({ video: true })
@@ -56,41 +56,28 @@ function App() {
     }
   }
 
-
-  const TestFirebase = () => {
+  const TestFirebase = (plantName) => {
     const plantsRef = dataRef.ref('dataset');
-    plantsRef.orderByChild('testname').equalTo(name).once('value', snapshot => {
+    plantsRef.orderByChild('testname').equalTo(plantName).once('value', snapshot => {
       const data = snapshot.val();
       if (data) {
         const key = Object.keys(data)[0];
+        setSearchedName(data[key].name);
         setSearchedAltName(data[key].alternativename);
         setSearchedSciName(data[key].sciencename);
       } else {
-        setSearchedAltName("No plant found with this name");
+        setSearchedName("No plant found with this name")
+        setSearchedAltName("");
         setSearchedSciName("");
       }
 
-      console.log(searchedAltName, searchedSciName);
-      return (
-        <div>
-          <div>
-            <h6>Alternative Name: {searchedAltName}</h6>
-            <h6>Scientific Name: {searchedSciName}</h6>
-          </div>
-        </div>
-      );
+      // console.log(searchedAltName, searchedSciName);
     });
-
-
-
   }
-
-
 
   const handleFileButtonClick = () => {
     fileInputRef.current.click();
   }
-
 
   const processFile = async (file) => {
     console.log("File type:", file.type);
@@ -136,20 +123,18 @@ function App() {
 
   const closeOverlay = (e) => {
     if (e.target === overlayRef.current) {
+      setSearchedName("");
       setSearchedAltName("");
       setSearchedSciName("");
       setIsOverlayClosing(true);
       setTimeout(() => {
-        setIsOverlayOpen(false);
+
         setIsOverlayOpen(false);
         setIsShowModal(false);
         setUploadedImage(null);
         // setIsCameraOn(true);
-
         setIsOverlayClosing(false);
-
       }, 300);
-
     }
   };
 
@@ -167,105 +152,68 @@ function App() {
                 <div className="modal-outer-box">
                   {isShowLoader && <img src="loading.svg" alt="Loading..." className="loader" />}
                   {isShowModal && (
-                    <>
-                      <div className="modal-inner-box" ref={modalRef}>
-                        {/* {uploadedImage &&  */}
-                        <div className="modal-content">
-                          <img src={uploadedImage} alt="Uploaded" className="image-herb" />
-
-                          <div className="right-content">
-                            <ul className="plant-list">
-                              {plantList.map((plant, index) =>
-                              // <li key={index}>{plant}</li>
-                              (
-                                <div className="hover-area"
-                                  key={index}
-                                  onMouseOver={() => {
-                                    setName(plant);
-                                    TestFirebase();
-                                    setIsHovered(true);
-                                  }}
-
-                                  onMouseOut={() => {
-                                    setSearchedAltName("");
-                                    setSearchedSciName("");
-                                    setIsHovered(false);
-
-                                  }}
-                                >
-                                  {!isHovered && <span className="plant-name">{plant}</span>}
-                                  {isHovered && (
-                                    <div className="hover-test">
-                                      <h6>Alternative Name: {searchedAltName}</h6>
-                                      <h6>Scientific Name: {searchedSciName}</h6>
-                                    </div>
-                                  )}
-                                </div>
-                              )
-                              )}
-                            </ul>
-                          </div>
-
-
+                    <div className="modal-inner-box" ref={modalRef}>
+                      <div className="modal-content">
+                        <img src={uploadedImage} alt="Uploaded" className="image-herb" />
+                        <div className="right-content">
+                          <ul className="plant-list">
+                            {plantList.map((plant, index) => (
+                              <div
+                                className="hover-area"
+                                key={index}
+                                onMouseEnter={() => {
+                                  setHoveredPlant(plant);
+                                  // setName(plant);
+                                  TestFirebase(plant);
+                                }}
+                                onMouseLeave={() => {
+                                  setHoveredPlant(null);
+                                  setSearchedName("");
+                                  setSearchedAltName("");
+                                  setSearchedSciName("");
+                                }}
+                              >
+                                <span className="plant-name">{plant}</span>
+                                {hoveredPlant === plant && (
+                                  <div className="hover-test">
+                                    <h6>Name: {searchedName}</h6>
+                                    <h6>Alternative Name: {searchedAltName}</h6>
+                                    <h6>Scientific Name: {searchedSciName}</h6>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </ul>
                         </div>
-                        {/* } */}
                       </div>
-                    </>
-                  )
-                  }
+                    </div>
+                  )}
                 </div>
               </div>
             </>
           )}
 
+
           <div className="webcam-container">
             {isCameraOn ? (
               <Webcam className="webcam" ref={webcamRef} />
             ) : (
-              // <p>No camera currently</p>
               <img src="char.webp" alt="Placeholder" className="error-holder" />
-
             )}
           </div>
 
           <div className="button-container">
             <button className="toggle-button button" onClick={handleButtonClick}>
-              {/* {isCameraOn ? 'Camera Off' : 'Camera On'} */}
               Camera
             </button>
-
             <button className="capture-button button" onClick={capture}>Capture</button>
-
             <button className="input-button button" onClick={handleFileButtonClick}>Upload</button>
-
             <input className="file-input" type="file" accept="image/*" ref={fileInputRef} style={{ display: 'none' }} onChange={handleFileChange} />
           </div>
         </div>
-
-
-
-
-
-        {/* <div>
-          {isShowLoader && <img src="loading.svg" alt="Loading..." />}
-         
-        </div> */}
-
-        {/* <img src="" className="image-herb"/> */}
-
-        {/* {uploadedImage && <img src={uploadedImage} alt="Uploaded" style={{width: '200px', height: 'auto'}} className="image-herb"  />} */}
-
-
-
-
-        {/* <ul className="plant-list">
-          {plantList.map((plant, index) => <li key={index}>{plant}</li>)}
-        </ul> */}
-
-
       </div>
     </>
-  )
+  );
 }
 
 export default App;
