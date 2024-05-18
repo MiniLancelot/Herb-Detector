@@ -27,7 +27,7 @@ function App() {
   const [searchedName, setSearchedName] = useState("");
   // const [searchedAltName, setSearchedAltName] = useState("");
   const [searchedSciName, setSearchedSciName] = useState("");
-  const[searchedUse, setSearchedUse] = useState("");
+  const [searchedUse, setSearchedUse] = useState("");
   const [hoveredPlant, setHoveredPlant] = useState(null);
 
   useEffect(() => {
@@ -117,7 +117,15 @@ function App() {
 
   const capture = async () => {
     const imageSrc = webcamRef.current.getScreenshot();
-    fetch(imageSrc)
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 1980;
+    canvas.height = 1080;
+    ctx.drawImage(imageSrc, 0, 0, 1980, 1080);
+    const newImageSrc = canvas.toDataURL("image/jpeg", 1.0);
+    
+    fetch(newImageSrc)
       .then((res) => res.blob())
       .then(async (blob) => {
         const file = new File([blob], "webcam-image.png", { type: "image/png" });
