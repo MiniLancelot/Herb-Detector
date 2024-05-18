@@ -1,6 +1,7 @@
 import Webcam from "react-webcam";
 import { useState, useEffect, useRef } from "react";
 import { dataRef } from "./Firebase";
+// import { set } from "firebase/database";
 
 async function postData(url = "", data = {}) {
   const response = await fetch(url, {
@@ -24,8 +25,9 @@ function App() {
   const [isOverlayClosing, setIsOverlayClosing] = useState(false);
   // const [name, setName] = useState('');
   const [searchedName, setSearchedName] = useState("");
-  const [searchedAltName, setSearchedAltName] = useState("");
+  // const [searchedAltName, setSearchedAltName] = useState("");
   const [searchedSciName, setSearchedSciName] = useState("");
+  const[searchedUse, setSearchedUse] = useState("");
   const [hoveredPlant, setHoveredPlant] = useState(null);
 
   useEffect(() => {
@@ -63,12 +65,14 @@ function App() {
       if (data) {
         const key = Object.keys(data)[0];
         setSearchedName(data[key].name);
-        setSearchedAltName(data[key].alternativename);
+        // setSearchedAltName(data[key].alternativename);
         setSearchedSciName(data[key].sciencename);
+        setSearchedUse(data[key].uses);
       } else {
         setSearchedName("No plant found with this name")
-        setSearchedAltName("");
+        // setSearchedAltName("");
         setSearchedSciName("");
+        setSearchedUse("");
       }
 
       // console.log(searchedAltName, searchedSciName);
@@ -124,8 +128,9 @@ function App() {
   const closeOverlay = (e) => {
     if (e.target === overlayRef.current) {
       setSearchedName("");
-      setSearchedAltName("");
+      // setSearchedAltName("");
       setSearchedSciName("");
+      setSearchedUse("");
       setIsOverlayClosing(true);
       setTimeout(() => {
 
@@ -169,16 +174,18 @@ function App() {
                                 onMouseLeave={() => {
                                   setHoveredPlant(null);
                                   setSearchedName("");
-                                  setSearchedAltName("");
+                                  // setSearchedAltName("");
                                   setSearchedSciName("");
+                                  setSearchedUse("");
                                 }}
                               >
                                 <span className="plant-name">{plant}</span>
                                 {hoveredPlant === plant && (
-                                  <div className="hover-test">
-                                    <h6>Name: {searchedName}</h6>
-                                    <h6>Alternative Name: {searchedAltName}</h6>
-                                    <h6>Scientific Name: {searchedSciName}</h6>
+                                  <div className="hover-container">
+                                    <h6><strong>Tên:</strong> {searchedName}</h6>
+                                    {/* <h6>Alternative Name: {searchedAltName}</h6> */}
+                                    <h6><strong>Tên khoa học:</strong> {searchedSciName}</h6>
+                                    <h6><strong>Công dụng:</strong> {searchedUse}</h6>
                                   </div>
                                 )}
                               </div>

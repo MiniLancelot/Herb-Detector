@@ -217,7 +217,28 @@ body {
 }
 
 
-.hover-test h6{
+
+.hover-container{
+  width: 160px;
+  height: 100px;
+  padding: 10px;
+  border-radius: 10px;
+  text-align: left;
+  position: absolute;
+  background-color: #f1385a;
+  transform:  translateX(-40px);
+  animation: modalFadeIn 0.3s;
+  color: white;
+  overflow-y:auto;
+  -ms-overflow-style: none;
+  
+}
+
+.hover-container::-webkit-scrollbar {
+  display: none;
+}
+
+.hover-container h6{
   font-size: 10px;
   font-weight: var(--regular-font);
 }
