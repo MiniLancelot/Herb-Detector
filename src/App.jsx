@@ -118,14 +118,14 @@ function App() {
   const capture = async () => {
     const imageSrc = webcamRef.current.getScreenshot();
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 1980;
-    canvas.height = 1080;
-    ctx.drawImage(imageSrc, 0, 0, 1980, 1080);
-    const newImageSrc = canvas.toDataURL("image/jpeg", 1.0);
+    // const canvas = document.createElement("canvas");
+    // const ctx = canvas.getContext("2d");
+    // canvas.width = 1980;
+    // canvas.height = 1080;
+    // ctx.drawImage(imageSrc, 0, 0, 1980, 1080);
+    // const newImageSrc = canvas.toDataURL("image/jpeg", 1.0);
     
-    fetch(newImageSrc)
+    fetch(imageSrc)
       .then((res) => res.blob())
       .then(async (blob) => {
         const file = new File([blob], "webcam-image.png", { type: "image/png" });
