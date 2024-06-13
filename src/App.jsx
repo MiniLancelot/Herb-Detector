@@ -98,7 +98,7 @@ function App() {
     formData.append("image", file);
     setIsOverlayOpen(true);
     setIsShowLoader(true);
-    const response = await postData("https://cloud-detect.onrender.com/detect", formData);
+    const response = await postData("https://cloud-detect-herb.onrender.com/detect", formData);
     console.log(response.plant_detected);
 
     // setTimeout(async function() {
